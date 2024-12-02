@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Message - Payment Method</title>
+    <style>
+        /* Your existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .message-response {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Send Message</h1>
+        <select class="input-field" name="payment" id="payment">
+            <option value="gcash">gcash</option>
+            <option value="bank">bank</option>
+        </select>
+        <input id="content" class="input-field" type="text" placeholder="How much will you pay?" required />
+        <input id="sender" class="input-field" type="text" placeholder="Enter your name" required />
+        <button class="button" onclick="sendMessage()">Send Message</button>
+
+        <div id="responseMessage" class="message-response" style="display: none;"></div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const content = document.getElementById('content').value;
+            const sender = document.getElementById('sender').value;
+            const payment = document.getElementById('payment').value;
+
+            if (!content || !sender || !payment) {
+                alert('Please fill in both fields.');
+                return;
+            }
+
+            const payload = { content, sender, payment };
+
+            fetch('/api/send-message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',  // Add CSRF token if needed
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseMessageDiv = document.getElementById('responseMessage');
+                if (data.message === 'Message sent successfully!') {
+                    responseMessageDiv.className = 'message-response success';
+                    responseMessageDiv.innerHTML = `${data.message}: ${data.payload.content}`;
+                } else {
+                    responseMessageDiv.className = 'message-response error';
+                    responseMessageDiv.innerHTML = `Error: ${data.error}`;
+                }
+                responseMessageDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the message.');
+            });
+        }
+    </script>
+
+</body>
+</html>
