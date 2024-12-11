@@ -26,7 +26,7 @@ ENCRYPT_KEY= b'gLceVXvKhGtvyiXr4gUV9RqRM-ZjDwvUOPiYO4iiDQg='
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+APPEND_SLASH = False
 
 # Application definition
 
@@ -38,13 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'message',
-     'corsheaders',
+    'corsheaders',
+    'rest_framework',
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.0:8000",
     "http://127.0.0.0:8001",
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'message.middleware.EncryptionMiddleware',
 ]
 
 ROOT_URLCONF = 'client.urls'
@@ -73,6 +76,13 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+STATIC_URL = '/static/'
+
+# Optionally, you can set a path for static files (usually only needed in production)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # this allows you to use static files stored in a 'static' directory at the root level of your project
 ]
 
 WSGI_APPLICATION = 'client.wsgi.application'

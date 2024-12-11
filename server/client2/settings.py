@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +46,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://127.0.0.1:8001",
 ]
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'message.middleware.DecryptionMiddleware',
 ]
 
 ROOT_URLCONF = 'client2.urls'

@@ -6,32 +6,26 @@ import base64
 from cryptography.fernet import Fernet
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
-f = Fernet(settings.ENCRYPT_KEY)
 
 @csrf_exempt
 def send_message(request):
-    api_url = 'http://127.0.0.1:8002/api/receive-message/'  
+    api_url = 'http://127.0.0.1:8001/api/receive-message/'
 
     if request.method == "POST":
         try:
-            # Get JSON data from the body of the request
-            payload = json.loads(request.body)  # Decode and load the JSON payload
-            content = payload.get('content')
-            sender = payload.get('sender')
-            payment = payload.get('payment')
+            # Get the base64-encoded encrypted message from the body of the request
+            payload = json.loads(request.body)
+            message_base64 = payload.get('message')
 
-            if not content or not sender:
-                return JsonResponse({'error': 'Content and sender are required fields.'}, status=400)
+            if not message_base64:
+                return JsonResponse({'error': 'Message is required.'}, status=400)
 
-            # Encrypt the content and sender data
-            message_bytes = json.dumps({'content': content, 'sender': sender, 'payment': payment}).encode('utf-8')
-            message_encrypted = f.encrypt(message_bytes)
-
-            # Encode the encrypted message to base64 to safely transmit over HTTP
-            message_base64 = base64.b64encode(message_encrypted).decode('utf-8')
-
-            # Send the encrypted base64-encoded data to another service via POST request
+            # Send the encrypted message to another service via POST request
             response = requests.post(api_url, data={'message': message_base64}, headers={'Content-Type': 'application/x-www-form-urlencoded'})
 
             if response.status_code == 201:
@@ -44,12 +38,98 @@ def send_message(request):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
-        
         except requests.exceptions.RequestException as e:
             return JsonResponse({'error': str(e)}, status=500)
 
     # For other methods, return method not allowed
     return JsonResponse({'error': 'Only POST method is allowed.'}, status=405)
 
-def payment_view(request):
-    return render(request, 'payment.html')
+@csrf_exempt
+def receive_payment_confirmation(request):
+    if request.method == 'POST':
+        try:
+            # Get the JSON data from the request body
+            data = json.loads(request.body)
+            content = data.get('content')  # Get 'content' from the JSON data
+            
+            if content:
+                # Logic to process the received payment confirmation (e.g., store it in the database)
+                # For now, we'll just return a success message
+                return JsonResponse({
+                    "success": True,
+                    "message": "Payment confirmation received successfully."
+                })
+            else:
+                return JsonResponse({
+                    "success": False,
+                    "message": "No content provided."
+                }, status=400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid JSON format."
+            }, status=400)
+
+    # If not a POST request, return method not allowed
+    return JsonResponse({
+        "success": False,
+        "message": "Invalid request method."
+    }, status=405)
+
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('payment')  # Replace with the home URL or any page after login
+        else:
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
+    
+    return render(request, 'login.html')
+
+def logout_view(request):
+    if request.method == 'POST':  # Ensure it only accepts POST
+        logout(request)  # Log the user out
+        return redirect('login')  # Redirect to the login page after logging out
+    return redirect('login')  # 
+
+
+
+def signup_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        password_confirm = request.POST['password_confirm']
+
+        # Check if passwords match
+        if password != password_confirm:
+            return render(request, 'registration.html', {'error': 'Passwords do not match.'})
+
+        # Check if username or email already exists
+        if User.objects.filter(username=username).exists():
+            return render(request, 'registration.html', {'error': 'Username already exists.'})
+
+        if User.objects.filter(email=email).exists():
+            return render(request, 'registration.html', {'error': 'Email already registered.'})
+
+        # Create a new user
+        user = User.objects.create_user(username=username, email=email, password=password)
+        login(request, user)  # Log the user in after registration
+        return redirect('signup')  # Redirect to payment or home page
+
+    return render(request, 'registration.html')
+
+
+@login_required
+def dashboard_view(request):
+    # Assuming the logged-in user is available in the request object
+    context = {
+        'user_name': request.user.username  # You can use request.user.first_name or request.user.get_full_name() if needed
+    }
+    return render(request, 'payment.html', context)
