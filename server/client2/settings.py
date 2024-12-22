@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'client2.wsgi.application'
 DATABASES = {
   'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'IT120',          # Replace with your database name
+        'NAME': 'IT-120',          # Replace with your database name
         'USER': 'postgres',          # Replace with your database username
-        'PASSWORD': 'niko',  # Replace with your database password
+        'PASSWORD': 'Mark131476!',  # Replace with your database password
         'HOST': 'localhost',                  # Change this if your database is hosted elsewhere
         'PORT': '5432',                       # Default PostgreSQL port, change if necessary
     }
