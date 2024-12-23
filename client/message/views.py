@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 import json
-import base64
+from django.contrib import messages
 from cryptography.fernet import Fernet
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -103,6 +102,11 @@ def logout_view(request):
 def signup_view(request):
     if request.method == 'POST':
         username = request.POST['username']
+<<<<<<< HEAD
+=======
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+>>>>>>> d786616d9296927ef8ba7f21fd7da89087407fcb
         email = request.POST['email']
         password = request.POST['password']
         password_confirm = request.POST['password_confirm']
@@ -119,8 +123,16 @@ def signup_view(request):
             return render(request, 'registration.html', {'error': 'Email already registered.'})
 
         # Create a new user
+<<<<<<< HEAD
         user = User.objects.create_user(username=username, email=email, password=password)
         login(request, user)  # Log the user in after registration
+=======
+        user = User.objects.create_user(username=username,first_name=first_name,last_name = last_name, email=email, password=password)
+        login(request, user)  # Log the user in after registration
+
+        messages.success(request, 'Registration successful! You are now logged in.')
+        
+>>>>>>> d786616d9296927ef8ba7f21fd7da89087407fcb
         return redirect('signup')  # Redirect to payment or home page
 
     return render(request, 'registration.html')
@@ -132,6 +144,7 @@ def dashboard_view(request):
     context = {
         'user_name': request.user.username  # You can use request.user.first_name or request.user.get_full_name() if needed
     }
+<<<<<<< HEAD
     return render(request, 'payment.html', context)
 
 
@@ -139,3 +152,6 @@ def dashboard_view(request):
     
 def landing_view(request):
     return render(request, 'landing.html')
+=======
+    return render(request, 'payment.html', context)
+>>>>>>> d786616d9296927ef8ba7f21fd7da89087407fcb

@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-@2164c7mn__+uw-r(*r25gi6u@59hru9j#yjharsssjojy--eb'
-ENCRYPT_KEY= b'gLceVXvKhGtvyiXr4gUV9RqRM-ZjDwvUOPiYO4iiDQg='
+ENCRYPT_KEY= b'RAVR8g1BKNCo8LbwOMJM7GzEnTzQInakdeE8to9vQ2o='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -75,6 +75,14 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = '/static/'
+
+# Optionally, you can set a path for static files (usually only needed in production)
+STATICFILES_DIRS = [
+    BASE_DIR / "assets",  # this allows you to use static files stored in a 'static' directory at the root level of your project
+]
+
 
 WSGI_APPLICATION = 'client2.wsgi.application'
 
