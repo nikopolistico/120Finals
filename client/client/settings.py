@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-!@ia$6@8n%w#0**&hohm_p8kxi*56@asuv(&8=80)_ecl66hgs'
-ENCRYPT_KEY= b'gLceVXvKhGtvyiXr4gUV9RqRM-ZjDwvUOPiYO4iiDQg='
+ENCRYPT_KEY= b'RAVR8g1BKNCo8LbwOMJM7GzEnTzQInakdeE8to9vQ2o='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -93,8 +93,12 @@ WSGI_APPLICATION = 'client.wsgi.application'
 
 DATABASES = {
   'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'IT120',          # Replace with your database name
+        'USER': 'postgres',          # Replace with your database username
+        'PASSWORD': 'niko',  # Replace with your database password
+        'HOST': 'localhost',                  # Change this if your database is hosted elsewhere
+        'PORT': '5432',                       # Default PostgreSQL port, change if necessary
     }
 }
 # Password validation

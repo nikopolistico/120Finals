@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'UI/style.css' %}">
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -16,6 +18,10 @@
     <a href="#">Profile</a>
     <a href="#">Messages</a>
     <a href="#">Settings</a>
+    <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
+      {% csrf_token %}
+    </form>
+    <button class="logout-button" onclick="document.getElementById('logout-form').submit()">Logout</button>
   </div>
 
   <!-- Main Content -->
@@ -66,11 +72,6 @@
       <!-- Response message display -->
       <div id="responseMessage" class="message-response"></div>
 
-      <!-- Logout Button -->
-      <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
-        {% csrf_token %}
-      </form>
-      <button class="logout-button" onclick="document.getElementById('logout-form').submit()">Logout</button>
     </div>
 
     <!-- Received Messages Section -->
@@ -107,23 +108,23 @@
         },
         body: JSON.stringify(payload),
       })
-      .then(response => response.json())
-      .then(data => {
-        const responseMessageDiv = document.getElementById('responseMessage');
-        if (data.message === 'Message sent successfully!') {
-          responseMessageDiv.className = 'message-response success';
-          responseMessageDiv.innerHTML = `${data.message}: ${data.payload.content}`;
-          updateReceivedMessages(data.payload.content); // Update received message
-        } else {
-          responseMessageDiv.className = 'message-response error';
-          responseMessageDiv.innerHTML = `Error: ${data.error}`;
-        }
-        responseMessageDiv.style.display = 'block';
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while sending the message.');
-      });
+        .then(response => response.json())
+        .then(data => {
+          const responseMessageDiv = document.getElementById('responseMessage');
+          if (data.message === 'Message sent successfully!') {
+            responseMessageDiv.className = 'message-response success';
+            responseMessageDiv.innerHTML = `${data.message}: ${data.payload.content}`;
+            updateReceivedMessages(data.payload.content); // Update received message
+          } else {
+            responseMessageDiv.className = 'message-response error';
+            responseMessageDiv.innerHTML = `Error: ${data.error}`;
+          }
+          responseMessageDiv.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while sending the message.');
+        });
     }
 
     // Function to update the received message card
@@ -134,4 +135,5 @@
   </script>
 
 </body>
+
 </html>

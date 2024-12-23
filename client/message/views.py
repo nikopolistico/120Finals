@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 import json
-import base64
+from django.contrib import messages
 from cryptography.fernet import Fernet
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -103,6 +102,8 @@ def logout_view(request):
 def signup_view(request):
     if request.method == 'POST':
         username = request.POST['username']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
         email = request.POST['email']
         password = request.POST['password']
         password_confirm = request.POST['password_confirm']
@@ -119,8 +120,11 @@ def signup_view(request):
             return render(request, 'registration.html', {'error': 'Email already registered.'})
 
         # Create a new user
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(username=username,first_name=first_name,last_name = last_name, email=email, password=password)
         login(request, user)  # Log the user in after registration
+
+        messages.success(request, 'Registration successful! You are now logged in.')
+        
         return redirect('signup')  # Redirect to payment or home page
 
     return render(request, 'registration.html')
