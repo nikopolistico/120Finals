@@ -137,3 +137,10 @@ def dashboard_view(request):
         'user_name': request.user.username  # You can use request.user.first_name or request.user.get_full_name() if needed
     }
     return render(request, 'payment.html', context)
+    
+def landing(request):
+    user_name = request.user.username if request.user.is_authenticated else "Guest"
+    context = {
+        'user_name': user_name
+    }
+    return render(request, 'landing.html', context)
