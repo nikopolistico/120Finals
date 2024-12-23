@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'IT-120',          # Replace with your database name
         'USER': 'postgres',          # Replace with your database username
-        'PASSWORD': 'Mark131476!    ',  # Replace with your database password
+        'PASSWORD': 'Mark131476!',  # Replace with your database password
         'HOST': 'localhost',                  # Change this if your database is hosted elsewhere
         'PORT': '5432',                       # Default PostgreSQL port, change if necessary
     }
