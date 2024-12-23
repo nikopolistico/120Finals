@@ -1,146 +1,6 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Dashboard</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'UI/style.css' %}">
-</head>
-
-<body>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2 style="color: #fff; text-align: center;">Dashboard</h2>
-    <a href="#">Home</a>
-    <a href="#">Profile</a>
-    <a href="#">Messages</a>
-    <a href="#">Settings</a>
-    <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
-      {% csrf_token %}
-    </form>
-    <button class="logout-button" onclick="document.getElementById('logout-form').submit()">Logout</button>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="header">
-      <h1>Welcome, <span class="user-name">{{ user_name }}</span>!</h1>
-      <div class="stats">
-        <div class="card">
-          <h3>Sales</h3>
-          <p>$1,200</p>
-        </div>
-        <div class="card">
-          <h3>Users</h3>
-          <p>350</p>
-        </div>
-        <div class="card">
-          <h3>Messages</h3>
-          <p>5 New</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart">
-      <h2>Performance Over Time</h2>
-      <div class="bar bar-1"></div>
-      <div class="bar bar-2"></div>
-      <div class="bar bar-3"></div>
-    </div>
-
-    <!-- Payment Message Form -->
-    <div class="container">
-      <h1>Send Payment Message</h1>
-      <!-- Payment Method -->
-      <select class="input-field" name="payment" id="payment">
-        <option value="gcash">Gcash</option>
-        <option value="bank">Bank Transfer</option>
-      </select>
-
-      <!-- Amount to pay -->
-      <input id="content" class="input-field" type="text" placeholder="Amount to pay" required />
-
-      <!-- Sender's name -->
-      <input id="sender" class="input-field" type="text" placeholder="Enter your name" required />
-
-      <!-- Send Message Button -->
-      <button class="button" onclick="sendMessage()">Send Message</button>
-
-      <!-- Response message display -->
-      <div id="responseMessage" class="message-response"></div>
-
-    </div>
-
-    <!-- Received Messages Section -->
-    <div class="container">
-      <h1>Received Messages</h1>
-      <!-- Messages card -->
-      <div id="messagesCard" class="card">
-        <h3>Message 1</h3>
-        <p id="messageContent">Waiting for message...</p>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    // Send message function
-    function sendMessage() {
-      const content = document.getElementById('content').value;
-      const sender = document.getElementById('sender').value;
-      const payment = document.getElementById('payment').value;
-
-      if (!content || !sender || !payment) {
-        alert('Please fill in all fields.');
-        return;
-      }
-
-      const payload = { content, sender, payment };
-
-      fetch('/api/send-message/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}',
-        },
-        body: JSON.stringify(payload),
-      })
-        .then(response => response.json())
-        .then(data => {
-          const responseMessageDiv = document.getElementById('responseMessage');
-          if (data.message === 'Message sent successfully!') {
-            responseMessageDiv.className = 'message-response success';
-            responseMessageDiv.innerHTML = `${data.message}: ${data.payload.content}`;
-            updateReceivedMessages(data.payload.content); // Update received message
-          } else {
-            responseMessageDiv.className = 'message-response error';
-            responseMessageDiv.innerHTML = `Error: ${data.error}`;
-          }
-          responseMessageDiv.style.display = 'block';
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while sending the message.');
-        });
-    }
-
-    // Function to update the received message card
-    function updateReceivedMessages(messageContent) {
-      const messageContentElement = document.getElementById('messageContent');
-      messageContentElement.innerText = `Received: ${messageContent}`;
-    }
-  </script>
-
-</body>
-
-</html>
-=======
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -271,9 +131,17 @@
       transition: width 0.5s ease;
     }
 
-    .bar-1 { width: 80%; }
-    .bar-2 { width: 60%; }
-    .bar-3 { width: 40%; }
+    .bar-1 {
+      width: 80%;
+    }
+
+    .bar-2 {
+      width: 60%;
+    }
+
+    .bar-3 {
+      width: 40%;
+    }
 
     .container {
       background-color: var(--card-bg);
@@ -289,7 +157,8 @@
       color: var(--primary-color);
     }
 
-    .input-field, .button {
+    .input-field,
+    .button {
       width: 100%;
       padding: 12px;
       margin-bottom: 15px;
@@ -386,6 +255,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -476,6 +346,11 @@
 
       const payload = { content, sender, payment };
 
+      const responseMessageDiv = document.getElementById('responseMessage');
+      responseMessageDiv.innerHTML = `Sending: ₱${payment} to ${sender}`;
+      updateReceivedMessages(content, sender);
+
+
       fetch('/api/send-message/', {
         method: 'POST',
         headers: {
@@ -484,33 +359,38 @@
         },
         body: JSON.stringify(payload),
       })
-      .then(response => response.json())
-      .then(data => {
-        const responseMessageDiv = document.getElementById('responseMessage');
-        if (data.message === 'Message sent successfully!') {
-          responseMessageDiv.className = 'message-response success';
-          responseMessageDiv.innerHTML = `${data.message}: ₱${data.payload.content} to ${data.payload.sender}`;
-          updateReceivedMessages(data.payload.content, data.payload.sender);
-        } else {
-          responseMessageDiv.className = 'message-response error';
-          responseMessageDiv.innerHTML = `Error: ${data.error}`;
-        }
-        responseMessageDiv.style.display = 'block';
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while sending the request.');
-      });
+        .then(response => response.json())
+        .then(data => {
+          console.log('Backend Response:', data); // Debugging line
+          if (data.message === 'Message sent successfully!') {
+            responseMessageDiv.className = 'message-response success';
+            responseMessageDiv.innerHTML = `${data.message}`
+          } else {
+            responseMessageDiv.className = 'message-response error';
+            responseMessageDiv.innerHTML = `Error: ${data.error}`;
+          }
+          responseMessageDiv.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while sending the request.');
+        });
     }
 
     // Function to update the received message card
     function updateReceivedMessages(amount, recipient) {
       const messageContentElement = document.getElementById('messageContent');
-      messageContentElement.innerText = `Sent: ₱${amount} to ${recipient}`;
+
+      // Create a new message element
+      const newMessage = document.createElement('div');
+      newMessage.innerText = `Sent: ₱${amount} to ${recipient}`;
+
+      // Append the new message to the existing message content
+      messageContentElement.appendChild(newMessage);
     }
+
   </script>
 
 </body>
-</html>
 
->>>>>>> group1/main
+</html>
