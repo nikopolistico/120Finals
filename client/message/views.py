@@ -133,3 +133,9 @@ def dashboard_view(request):
         'user_name': request.user.username  # You can use request.user.first_name or request.user.get_full_name() if needed
     }
     return render(request, 'payment.html', context)
+
+
+
+    
+def landing_view(request):
+    return render(request, 'landing.html')

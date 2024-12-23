@@ -3,19 +3,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Dashboard</title>
+  <title>P2P Dashboard</title>
   {% load static %}
-  <link rel="stylesheet" href="{% static 'UI/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2980b9;
+      --background-color: #ecf0f1;
+      --text-color: #2c3e50;
+      --card-bg: #ffffff;
+      --sidebar-bg: #34495e;
+      --sidebar-hover: #2c3e50;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: var(--sidebar-hover);
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .user-name {
+      color: var(--primary-color);
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 200px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .card p {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .chart {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart h2 {
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+
+    .bar {
+      height: 30px;
+      background-color: var(--primary-color);
+      margin-bottom: 10px;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+
+    .bar-1 { width: 80%; }
+    .bar-2 { width: 60%; }
+    .bar-3 { width: 40%; }
+
+    .container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .container h1 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+
+    .input-field, .button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .message-response {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .logout-button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-align: left;
+      font-size: 16px;
+    }
+
+    .logout-button:hover {
+      background-color: #c0392b;
+    }
+
+    .logout-button i {
+      margin-right: 10px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .sidebar a {
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      .sidebar .logout-button {
+        display: inline-block;
+        width: auto;
+        margin-top: 0;
+        margin-right: 10px;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+
+      .stats {
+        flex-direction: column;
+      }
+
+      .card {
+        min-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2 style="color: #fff; text-align: center;">Dashboard</h2>
-    <a href="#">Home</a>
-    <a href="#">Profile</a>
-    <a href="#">Messages</a>
-    <a href="#">Settings</a>
+    <h2>P2P Pay</h2>
+    <a href="#"><i class="fas fa-home"></i> Home</a>
+    <a href="#"><i class="fas fa-user"></i> Profile</a>
+    <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+    <form id="logout-form" action="{% url 'logout' %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </form>
   </div>
 
   <!-- Main Content -->
@@ -24,22 +266,22 @@
       <h1>Welcome, <span class="user-name">{{ user_name }}</span>!</h1>
       <div class="stats">
         <div class="card">
-          <h3>Sales</h3>
-          <p>$1,200</p>
+          <h3>Total Transactions</h3>
+          <p>₱1,200</p>
         </div>
         <div class="card">
-          <h3>Users</h3>
+          <h3>Active Users</h3>
           <p>350</p>
         </div>
         <div class="card">
-          <h3>Messages</h3>
-          <p>5 New</p>
+          <h3>Pending Requests</h3>
+          <p>5</p>
         </div>
       </div>
     </div>
 
     <div class="chart">
-      <h2>Performance Over Time</h2>
+      <h2>Transaction History</h2>
       <div class="bar bar-1"></div>
       <div class="bar bar-2"></div>
       <div class="bar bar-3"></div>
@@ -47,39 +289,33 @@
 
     <!-- Payment Message Form -->
     <div class="container">
-      <h1>Send Payment Message</h1>
+      <h1>Send Payment Request</h1>
       <!-- Payment Method -->
       <select class="input-field" name="payment" id="payment">
-        <option value="gcash">Gcash</option>
+        <option value="gcash">GCash</option>
         <option value="bank">Bank Transfer</option>
       </select>
 
       <!-- Amount to pay -->
-      <input id="content" class="input-field" type="text" placeholder="Amount to pay" required />
+      <input id="content" class="input-field" type="number" placeholder="Amount to request (₱)" required />
 
       <!-- Sender's name -->
-      <input id="sender" class="input-field" type="text" placeholder="Enter your name" required />
+      <input id="sender" class="input-field" type="text" placeholder="Enter recipient's name" required />
 
       <!-- Send Message Button -->
-      <button class="button" onclick="sendMessage()">Send Message</button>
+      <button class="button" onclick="sendMessage()">Send Request</button>
 
       <!-- Response message display -->
       <div id="responseMessage" class="message-response"></div>
-
-      <!-- Logout Button -->
-      <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
-        {% csrf_token %}
-      </form>
-      <button class="logout-button" onclick="document.getElementById('logout-form').submit()">Logout</button>
     </div>
 
     <!-- Received Messages Section -->
     <div class="container">
-      <h1>Received Messages</h1>
+      <h1>Recent Transactions</h1>
       <!-- Messages card -->
       <div id="messagesCard" class="card">
-        <h3>Message 1</h3>
-        <p id="messageContent">Waiting for message...</p>
+        <h3>Latest Transaction</h3>
+        <p id="messageContent">Waiting for transactions...</p>
       </div>
     </div>
 
@@ -112,8 +348,8 @@
         const responseMessageDiv = document.getElementById('responseMessage');
         if (data.message === 'Message sent successfully!') {
           responseMessageDiv.className = 'message-response success';
-          responseMessageDiv.innerHTML = `${data.message}: ${data.payload.content}`;
-          updateReceivedMessages(data.payload.content); // Update received message
+          responseMessageDiv.innerHTML = `${data.message}: ₱${data.payload.content} to ${data.payload.sender}`;
+          updateReceivedMessages(data.payload.content, data.payload.sender);
         } else {
           responseMessageDiv.className = 'message-response error';
           responseMessageDiv.innerHTML = `Error: ${data.error}`;
@@ -122,16 +358,17 @@
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while sending the message.');
+        alert('An error occurred while sending the request.');
       });
     }
 
     // Function to update the received message card
-    function updateReceivedMessages(messageContent) {
+    function updateReceivedMessages(amount, recipient) {
       const messageContentElement = document.getElementById('messageContent');
-      messageContentElement.innerText = `Received: ${messageContent}`;
+      messageContentElement.innerText = `Sent: ₱${amount} to ${recipient}`;
     }
   </script>
 
 </body>
 </html>
+

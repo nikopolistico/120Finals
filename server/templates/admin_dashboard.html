@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Full-Screen Dashboard with Table</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <style>
+        /* Body and Root Settings */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        main {
+            height: 100%;
+            margin-left: 220px;
+            transition: margin-left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidenav Styles */
+        .sidenav {
+            background-color: #343a40;
+            color: white;
+            height: 100%;
+            padding-top: 20px;
+            position: fixed;
+            width: 220px;
+            overflow-y: auto;
+            transition: width 0.3s ease;
+        }
+
+        .sidenav a {
+            color: #cfd4da;
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidenav a:hover {
+            background-color: #495057;
+            color: #ffc107;
+        }
+
+        .sidenav h2 {
+            color: #ffc107;
+            margin-left: 15px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidenav.collapsed {
+            width: 60px;
+        }
+
+        .sidenav.collapsed h2 {
+            margin-left: -9999px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidenav.collapsed a {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .sidenav.collapsed a span {
+            display: none;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 220px;
+            font-size: 20px;
+            color: #343a40;
+            cursor: pointer;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        .sidenav.collapsed+.toggle-btn {
+            left: 60px;
+        }
+
+        main.collapsed {
+            margin-left: 60px;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .footer {
+            padding: 10px;
+            text-align: center;
+            background-color: #343a40;
+            color: white;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidenav">
+        <h2>Logo</h2>
+        <a href="#"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+        <a href="#"><i class="fas fa-user"></i> <span>Profile</span></a>
+        <a href="#"><i class="fas fa-chart-pie"></i> <span>Reports</span></a>
+        <a href="#"><i class="fas fa-cogs"></i> <span>Settings</span></a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <div class="toggle-btn">
+        <i class="fas fa-arrow-right"></i>
+    </div>
+
+    <main>
+        <div class="content">
+            <h1>Dashboard Overview</h1>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3 p-3">
+                        <h5>Users</h5>
+                        <p>1 Million</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3 p-3">
+                        <h5>Pages</h5>
+                        <p>100 Million</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3 p-3">
+                        <h5>Sessions</h5>
+                        <p>10 Million</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3 p-3">
+                        <h5>Bounce Rate</h5>
+                        <p>30%</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Received Payment</h2>
+            <div id="messages">
+                {% if messages %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sender</th>
+                            <th>Payment Method</th>
+                            <th>Money</th>
+                            <th>Received On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages-tbody">
+                        <!-- Messages will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No messages yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="footer">
+            &copy; 2024 Full-Screen Dashboard Example
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidenav = document.querySelector(".sidenav");
+            const toggleBtn = document.querySelector(".toggle-btn");
+            const main = document.querySelector("main");
+            const icon = toggleBtn.querySelector("i");
+
+            toggleBtn.addEventListener("click", () => {
+                sidenav.classList.toggle("collapsed");
+                main.classList.toggle("collapsed");
+
+                if (sidenav.classList.contains("collapsed")) {
+                    icon.classList.remove("fa-bars");
+                    icon.classList.add("fa-arrow-right");
+                } else {
+                    icon.classList.remove("fa-arrow-right");
+                    icon.classList.add("fa-bars");
+                }
+            });
+        });
+
+        const csrfToken = document.querySelector('[name=csrf-token]').content;
+
+        // Function to display status messages
+        function displayStatusMessage(message, type) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status-message ${type === 'success' ? 'success-message' : 'error-message'}`;
+            statusDiv.textContent = message;
+            document.body.appendChild(statusDiv);
+            setTimeout(() => {
+                statusDiv.remove();
+            }, 5000);  // Message disappears after 5 seconds
+        }
+
+        // Delete message function
+        function deleteMessage(messageId, sender) {
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete this message?')) {
+                fetch(`/api/delete-message/${messageId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,  // CSRF token
+                    },
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            document.getElementById(`message-${messageId}`).remove();
+                            displayStatusMessage(`Message from ${sender} deleted successfully.`, 'success');
+                        } else {
+                            displayStatusMessage('Failed to delete the message.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        displayStatusMessage('An error occurred while deleting the message.', 'error');
+                    });
+            }
+        }
+
+        fetch('http://127.0.0.1:8001/api/get-messages/')  // Replace with the actual URL of your API view
+            .then(response => response.json())
+            .then(data => {
+                const messagesTbody = document.getElementById('messages-tbody');
+
+                // Loop through the messages and create table rows
+                data.forEach(message => {
+                    const row = document.createElement('tr');
+                    row.id = `message-${message.id}`;  // Set the row ID for easy reference
+
+                    row.innerHTML = `
+                <td>${message.sender}</td>
+                <td>${message.payment}</td>
+                <td>${message.content}</td>
+                <td>${message.created_at}</td>
+                <td>
+                    <button class="delete-button" onclick="deleteMessage(${message.id}, '${message.sender}')">
+                        Delete
+                    </button>
+                </td>
+            `;
+                    messagesTbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching messages:', error);
+            });
+
+    </script>
+
+</body>
+
+</html>
