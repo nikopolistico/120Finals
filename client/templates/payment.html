@@ -260,10 +260,10 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <h2>P2P Pay</h2>
-    <a href="#"><i class="fas fa-home"></i> Home</a>
+    <!-- <a href="#"><i class="fas fa-home"></i> Home</a>
     <a href="#"><i class="fas fa-user"></i> Profile</a>
     <a href="#"><i class="fas fa-envelope"></i> Messages</a>
-    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+    <a href="#"><i class="fas fa-cog"></i> Settings</a> -->
     <form id="logout-form" action="{% url 'logout' %}" method="POST">
       {% csrf_token %}
       <button type="submit" class="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -325,7 +325,6 @@
       <!-- Messages card -->
       <div id="messagesCard" class="card">
         <h3>Latest Transaction</h3>
-        <p id="messageContent">Waiting for transactions...</p>
       </div>
     </div>
 
@@ -392,7 +391,4 @@
 
 </body>
 
-<<<<<<< HEAD
-=======
 </html>
->>>>>>> d786616d9296927ef8ba7f21fd7da89087407fcb

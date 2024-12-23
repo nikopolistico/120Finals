@@ -11,6 +11,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 
+
+def landing_page(request):
+    return render(request, 'landing.html')
+
+@login_required
 @csrf_exempt
 def send_message(request):
     api_url = 'http://127.0.0.1:8001/api/receive-message/'
@@ -43,6 +48,7 @@ def send_message(request):
     # For other methods, return method not allowed
     return JsonResponse({'error': 'Only POST method is allowed.'}, status=405)
 
+@login_required
 @csrf_exempt
 def receive_payment_confirmation(request):
     if request.method == 'POST':
@@ -79,6 +85,10 @@ def receive_payment_confirmation(request):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        # Redirect to the dashboard or any other page if the user is logged in
+        return redirect('payment')  # Replace 'payment' with your desired page (e.g., 'dashboard')
+
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -91,6 +101,7 @@ def login_view(request):
     
     return render(request, 'login.html')
 
+@login_required
 def logout_view(request):
     if request.method == 'POST':  # Ensure it only accepts POST
         logout(request)  # Log the user out
@@ -100,6 +111,10 @@ def logout_view(request):
 
 
 def signup_view(request):
+    if request.user.is_authenticated:
+        # Redirect to the dashboard or any other page if the user is logged in
+        return redirect('payment')  # Replace 'payment' with your desired page (e.g., 'dashboard')
+
     if request.method == 'POST':
         username = request.POST['username']
         first_name = request.POST['first_name']
